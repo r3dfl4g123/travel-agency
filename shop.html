@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop | Calaguas Island Tours</title>
+    <style>
+        :root {
+            --primary: #2a9d8f;
+            --primary-dark: #21867a;
+            --secondary: #264653;
+            --accent: #e9c46a;
+            --danger: #e76f51;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --muted: #6c757d;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            color: var(--dark);
+            background-color: #f5f5f5;
+        }
+
+        header {
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 { margin: 0 0 0.5rem; font-size: 2.4rem; }
+        header p { margin: 0; opacity: 0.9; }
+
+        nav {
+            background-color: var(--secondary);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li { margin: 0 0.5rem; }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, nav a.active { background-color: var(--primary); }
+
+        .cart-toggle {
+            background: var(--accent);
+            color: var(--secondary);
+            border: none;
+            border-radius: 999px;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .cart-count {
+            display: inline-block;
+            min-width: 1.4em;
+            padding: 0 0.35em;
+            margin-left: 0.25rem;
+            border-radius: 999px;
+            background: var(--secondary);
+            color: white;
+            font-size: 0.8rem;
+            line-height: 1.4em;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+        .filter-btn {
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; }
+
+        .toolbar input, .toolbar select {
+            padding: 0.6rem 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .search-sort { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.18);
+        }
+
+        .product-media {
+            height: 180px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            background: linear-gradient(135deg, #a8e6cf, #2a9d8f);
+        }
+
+        .product-media img { width: 100%; height: 100%; object-fit: cover; font-size: 0.9rem; }
+
+        .badge {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: var(--accent);
+            color: var(--secondary);
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .product-info {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .product-info h3 { margin: 0 0 0.4rem; color: var(--secondary); font-size: 1.1rem; }
+        .product-info p { margin: 0 0 1rem; color: var(--muted); font-size: 0.92rem; flex: 1; }
+
+        .product-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .product-footer .btn { white-space: nowrap; padding: 0.6rem 0.9rem; }
+        .price { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+        .price small { font-size: 0.75rem; color: var(--muted); font-weight: normal; }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.65rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn:hover { background-color: var(--primary-dark); transform: translateY(-2px); }
+        .btn:disabled { background: #aaa; cursor: not-allowed; transform: none; }
+        .btn-block { width: 100%; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+
+        .empty-state { text-align: center; color: var(--muted); padding: 3rem 0; grid-column: 1 / -1; }
+
+        /* Cart drawer */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 200;
+        }
+
+        .overlay.open { opacity: 1; pointer-events: auto; }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: min(420px, 100%);
+            background: white;
+            z-index: 201;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.15);
+        }
+
+        .cart-drawer.open { transform: translateX(0); }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+        }
+
+        .drawer-header h2 { margin: 0; font-size: 1.3rem; }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.6rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .drawer-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 56px 1fr auto;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0.9rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #a8e6cf, #2a9d8f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+        }
+
+        .cart-thumb img { width: 100%; height: 100%; object-fit: cover; font-size: 0.6rem; }
+
+        .cart-item h4 { margin: 0 0 0.25rem; font-size: 0.95rem; color: var(--secondary); }
+        .cart-item .unit { font-size: 0.82rem; color: var(--muted); }
+
+        .qty {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 0.4rem;
+        }
+
+        .qty button {
+            background: none;
+            border: none;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--secondary);
+        }
+
+        .qty span { min-width: 26px; text-align: center; font-weight: 600; }
+
+        .line-right { text-align: right; }
+        .line-total { font-weight: bold; color: var(--secondary); }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            padding: 0;
+        }
+
+        .drawer-footer { padding: 1.25rem 1.5rem; border-top: 1px solid #eee; background: var(--light); }
+
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.95rem; }
+        .summary-row.total { font-size: 1.2rem; font-weight: bold; color: var(--secondary); margin: 0.75rem 0 1rem; }
+        .summary-row.discount { color: var(--primary); }
+
+        .promo { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .promo input { flex: 1; padding: 0.55rem; border: 1px solid #ddd; border-radius: 5px; font-family: inherit; }
+        .promo-msg { font-size: 0.82rem; margin: -0.25rem 0 0.75rem; min-height: 1em; }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            background: rgba(0,0,0,0.5);
+            overflow-y: auto;
+            padding: 2rem 1rem;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 720px;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 { margin-top: 0; color: var(--secondary); }
+        .modal-content .icon-btn { position: absolute; top: 1rem; right: 1rem; color: var(--muted); }
+
+        .form-row { display: flex; gap: 1rem; }
+        .form-row .form-group { flex: 1; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.95rem; }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .payment-options { display: grid; gap: 0.5rem; }
+
+        .payment-options label {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 0.7rem 0.9rem;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .payment-options input { width: auto; }
+
+        .order-review {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin: 1rem 0 1.5rem;
+            font-size: 0.92rem;
+        }
+
+        .order-review .summary-row.total { margin-bottom: 0; }
+
+        .confirmation { text-align: center; }
+        .confirmation .check { font-size: 3.5rem; }
+        .order-id { font-family: monospace; font-size: 1.1rem; background: var(--light); padding: 0.3rem 0.7rem; border-radius: 5px; }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            background: var(--secondary);
+            color: white;
+            padding: 0.8rem 1.4rem;
+            border-radius: 999px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+            transition: transform 0.3s;
+            z-index: 400;
+            font-size: 0.95rem;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1.25rem 1rem; }
+            nav { flex-direction: column; }
+            .form-row { flex-direction: column; gap: 0; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-sort input, .search-sort select { flex: 1; }
+            .modal-content { padding: 1.5rem 1.25rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Calaguas Island Shop</h1>
+        <p>Tour packages, add-ons and island gear, all in one place</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html#home">Home</a></li>
+            <li><a href="index.html#packages">Packages</a></li>
+            <li><a href="shop.html" class="active">Shop</a></li>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+        <button class="cart-toggle" id="cartToggle" aria-label="Open cart">🛒 Cart <span class="cart-count" id="cartCount">0</span></button>
+    </nav>
+
+    <main class="container">
+        <div class="toolbar">
+            <div class="filters" id="filters">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="tours">Tour Packages</button>
+                <button class="filter-btn" data-category="addons">Add-ons &amp; Rentals</button>
+                <button class="filter-btn" data-category="merch">Merch &amp; Gear</button>
+            </div>
+            <div class="search-sort">
+                <input type="search" id="search" placeholder="Search products..." aria-label="Search products">
+                <select id="sort" aria-label="Sort products">
+                    <option value="featured">Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="name">Name A–Z</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="products" id="products"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Calaguas Island Tours. All rights reserved.</p>
+    </footer>
+
+    <!-- Cart drawer -->
+    <div class="overlay" id="overlay"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
+        <div class="drawer-header">
+            <h2>Your Cart</h2>
+            <button class="icon-btn" id="closeCart" aria-label="Close cart">&times;</button>
+        </div>
+        <div class="drawer-body" id="cartItems"></div>
+        <div class="drawer-footer">
+            <div class="promo">
+                <input type="text" id="promoInput" placeholder="Promo code" aria-label="Promo code">
+                <button class="btn btn-outline" id="applyPromo">Apply</button>
+            </div>
+            <div class="promo-msg" id="promoMsg"></div>
+            <div id="cartSummary"></div>
+            <button class="btn btn-block" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </aside>
+
+    <!-- Checkout modal -->
+    <div class="modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+        <div class="modal-content" id="checkoutContent">
+            <button class="icon-btn" data-close-modal aria-label="Close">&times;</button>
+            <h2 id="checkoutTitle">Checkout</h2>
+            <form id="checkoutForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="coName">Full Name</label>
+                        <input type="text" id="coName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="coEmail">Email</label>
+                        <input type="email" id="coEmail" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="coPhone">Phone Number</label>
+                        <input type="tel" id="coPhone" required>
+                    </div>
+                    <div class="form-group" id="dateGroup">
+                        <label for="coDate">Travel Date</label>
+                        <input type="date" id="coDate">
+                    </div>
+                </div>
+                <div class="form-group" id="addressGroup">
+                    <label for="coAddress">Shipping Address (for merch)</label>
+                    <textarea id="coAddress" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <div class="payment-options">
+                        <label><input type="radio" name="payment" value="GCash" checked> GCash: we'll send payment instructions by email</label>
+                        <label><input type="radio" name="payment" value="Bank Transfer"> Bank transfer (BDO / BPI)</label>
+                        <label><input type="radio" name="payment" value="Pay at Office"> Pay at our Daet office</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="coNotes">Notes / Special Requests</label>
+                    <textarea id="coNotes" rows="2"></textarea>
+                </div>
+
+                <h3>Order Review</h3>
+                <div class="order-review" id="orderReview"></div>
+
+                <button type="submit" class="btn btn-block">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const PRODUCTS = [
+            { id: 'beach-camping', category: 'tours', emoji: '🏕️', name: 'Beach Camping Adventure', desc: '2D/1N camping at Mahabang Buhangin with tent, meals and boat transfer.', price: 2500, unit: 'pax', img: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', badge: 'Best Seller', featured: 1 },
+            { id: 'island-hopping', category: 'tours', emoji: '🛥️', name: 'Island Hopping Tour', desc: 'Full-day hop to 5 islands with snorkeling stops and lunch included.', price: 1800, unit: 'pax', img: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', featured: 2 },
+            { id: 'private-cottage', category: 'tours', emoji: '🏝️', name: 'Private Cottage Package', desc: '3D/2N stay in a private beachfront cottage for 2, with all meals.', price: 6500, unit: 'couple', img: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', badge: 'Romantic', featured: 3 },
+            { id: 'barkada-pack', category: 'tours', emoji: '👫', name: 'Barkada Group Pack', desc: '2D/1N camping for a group of up to 6, with a private boat and a tour guide.', price: 13500, unit: 'group', img: 'https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80', badge: 'Save 10%', featured: 4 },
+            { id: 'van-transfer', category: 'addons', name: 'Manila–Paracale Van Transfer', desc: 'Round-trip air-conditioned van from Manila to the Paracale jump-off port.', price: 1500, unit: 'pax', emoji: '🚐', featured: 5 },
+            { id: 'snorkel-rental', category: 'addons', name: 'Snorkel Set Rental', desc: 'Mask, snorkel and fins for the whole trip. Sanitized after every use.', price: 250, unit: 'set', emoji: '🤿', featured: 6 },
+            { id: 'tent-upgrade', category: 'addons', name: 'Premium Tent Upgrade', desc: 'Larger 4-person tent with an air mattress and pillows.', price: 600, unit: 'night', emoji: '⛺', featured: 7 },
+            { id: 'drone-shoot', category: 'addons', name: 'Drone Photo & Video', desc: '30-minute aerial shoot with edited photos and a 1-minute highlight reel.', price: 2000, unit: 'session', emoji: '🚁', badge: 'New', featured: 8 },
+            { id: 'shirt', category: 'merch', name: 'Calaguas Souvenir Tee', desc: '100% cotton shirt with a hand-drawn Mahabang Buhangin print.', price: 450, unit: 'piece', emoji: '👕', featured: 9 },
+            { id: 'dry-bag', category: 'merch', name: '10L Waterproof Dry Bag', desc: 'Keeps phones, wallets and clothes dry on the boat ride.', price: 550, unit: 'piece', emoji: '🎒', featured: 10 },
+            { id: 'bucket-hat', category: 'merch', name: 'Island Bucket Hat', desc: 'Lightweight, quick-dry hat with UPF 50 sun protection.', price: 350, unit: 'piece', emoji: '👒', featured: 11 },
+            { id: 'reef-sunscreen', category: 'merch', name: 'Reef-Safe Sunscreen SPF 50', desc: 'Mineral-based sunscreen that protects you and the corals.', price: 420, unit: 'bottle', emoji: '🧴', badge: 'Eco', featured: 12 },
+        ];
+
+        const PROMOS = {
+            CALAGUAS10: { type: 'percent', value: 10, label: '10% off your order' },
+            BARKADA500: { type: 'fixed', value: 500, min: 5000, label: '₱500 off orders ₱5,000+' },
+        };
+
+        const SHIPPING_FEE = 150;
+        const FREE_SHIPPING_MIN = 1500;
+        const STORAGE_KEY = 'calaguas-cart';
+
+        const peso = n => '₱' + n.toLocaleString('en-PH');
+        const $ = id => document.getElementById(id);
+        const byId = id => PRODUCTS.find(p => p.id === id);
+
+        function load(key, fallback) {
+            try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+        }
+        function save(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage unavailable */ }
+        }
+
+        let state = load(STORAGE_KEY, { items: {}, promo: null });
+        // Drop items that no longer exist in the catalog
+        Object.keys(state.items).forEach(id => { if (!byId(id)) delete state.items[id]; });
+
+        let filter = { category: 'all', query: '', sort: 'featured' };
+
+        function media(p) {
+            return p.img
+                ? `<img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'), { textContent: '${p.emoji}' }))">`
+                : `<span aria-hidden="true">${p.emoji}</span>`;
+        }
+
+        function renderProducts() {
+            const q = filter.query.trim().toLowerCase();
+            let list = PRODUCTS.filter(p =>
+                (filter.category === 'all' || p.category === filter.category) &&
+                (!q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q))
+            );
+            const sorters = {
+                featured: (a, b) => a.featured - b.featured,
+                'price-asc': (a, b) => a.price - b.price,
+                'price-desc': (a, b) => b.price - a.price,
+                name: (a, b) => a.name.localeCompare(b.name),
+            };
+            list.sort(sorters[filter.sort]);
+
+            $('products').innerHTML = list.length ? list.map(p => `
+                <article class="product-card">
+                    <div class="product-media">
+                        ${media(p)}
+                        ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+                    </div>
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                        <div class="product-footer">
+                            <div class="price">${peso(p.price)} <small>/${p.unit}</small></div>
+                            <button class="btn" data-add="${p.id}">Add to Cart</button>
+                        </div>
+                    </div>
+                </article>`).join('')
+                : `<div class="empty-state">No products match your search.</div>`;
+        }
+
+        function totals() {
+            const lines = Object.entries(state.items).map(([id, qty]) => ({ product: byId(id), qty }));
+            const subtotal = lines.reduce((s, l) => s + l.product.price * l.qty, 0);
+            const merchSubtotal = lines.filter(l => l.product.category === 'merch').reduce((s, l) => s + l.product.price * l.qty, 0);
+            const hasMerch = merchSubtotal > 0;
+            const hasTours = lines.some(l => l.product.category !== 'merch');
+
+            let discount = 0;
+            const promo = state.promo && PROMOS[state.promo];
+            if (promo) {
+                if (promo.min && subtotal < promo.min) discount = 0;
+                else discount = promo.type === 'percent' ? Math.round(subtotal * promo.value / 100) : Math.min(promo.value, subtotal);
+            }
+            const shipping = hasMerch && merchSubtotal < FREE_SHIPPING_MIN ? SHIPPING_FEE : 0;
+            const total = subtotal - discount + shipping;
+            const count = lines.reduce((s, l) => s + l.qty, 0);
+            return { lines, subtotal, discount, shipping, total, count, hasMerch, hasTours, promo };
+        }
+
+        function summaryHTML(t) {
+            return `
+                <div class="summary-row"><span>Subtotal</span><span>${peso(t.subtotal)}</span></div>
+                ${t.discount ? `<div class="summary-row discount"><span>Promo (${state.promo})</span><span>−${peso(t.discount)}</span></div>` : ''}
+                ${t.hasMerch ? `<div class="summary-row"><span>Shipping</span><span>${t.shipping ? peso(t.shipping) : 'FREE'}</span></div>` : ''}
+                <div class="summary-row total"><span>Total</span><span>${peso(t.total)}</span></div>`;
+        }
+
+        function renderCart() {
+            const t = totals();
+            $('cartCount').textContent = t.count;
+
+            $('cartItems').innerHTML = t.lines.length ? t.lines.map(({ product: p, qty }) => `
+                <div class="cart-item">
+                    <div class="cart-thumb">${media(p)}</div>
+                    <div>
+                        <h4>${p.name}</h4>
+                        <div class="unit">${peso(p.price)} / ${p.unit}</div>
+                        <div class="qty">
+                            <button data-dec="${p.id}" aria-label="Decrease quantity">−</button>
+                            <span>${qty}</span>
+                            <button data-inc="${p.id}" aria-label="Increase quantity">+</button>
+                        </div>
+                    </div>
+                    <div class="line-right">
+                        <div class="line-total">${peso(p.price * qty)}</div>
+                        <button class="remove-btn" data-remove="${p.id}">Remove</button>
+                    </div>
+                </div>`).join('')
+                : `<div class="empty-state">Your cart is empty.<br><br><button class="btn" id="startShopping">Start Shopping</button></div>`;
+
+            $('cartSummary').innerHTML = summaryHTML(t);
+            $('checkoutBtn').disabled = t.count === 0;
+
+            if (t.promo && t.promo.min && t.subtotal < t.promo.min) {
+                setPromoMsg(`${state.promo} needs a minimum order of ${peso(t.promo.min)}.`, true);
+            }
+
+            save(STORAGE_KEY, state);
+        }
+
+        function setPromoMsg(text, isError) {
+            $('promoMsg').textContent = text;
+            $('promoMsg').style.color = isError ? 'var(--danger)' : 'var(--primary)';
+        }
+
+        function addToCart(id) {
+            state.items[id] = (state.items[id] || 0) + 1;
+            renderCart();
+            showToast(`Added “${byId(id).name}” to cart`);
+        }
+
+        function changeQty(id, delta) {
+            const next = (state.items[id] || 0) + delta;
+            if (next <= 0) delete state.items[id];
+            else state.items[id] = Math.min(next, 99);
+            renderCart();
+        }
+
+        let toastTimer;
+        function showToast(msg) {
+            $('toast').textContent = msg;
+            $('toast').classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => $('toast').classList.remove('show'), 2200);
+        }
+
+        function openCart() { $('cartDrawer').classList.add('open'); $('overlay').classList.add('open'); }
+        function closeCart() { $('cartDrawer').classList.remove('open'); $('overlay').classList.remove('open'); }
+
+        function openCheckout() {
+            const t = totals();
+            if (!t.count) return;
+            closeCart();
+            $('dateGroup').style.display = t.hasTours ? '' : 'none';
+            $('coDate').required = t.hasTours;
+            $('addressGroup').style.display = t.hasMerch ? '' : 'none';
+            $('coAddress').required = t.hasMerch;
+            $('orderReview').innerHTML =
+                t.lines.map(({ product: p, qty }) => `<div class="summary-row"><span>${qty} × ${p.name}</span><span>${peso(p.price * qty)}</span></div>`).join('') +
+                '<hr style="border:none;border-top:1px solid #ddd;margin:0.75rem 0">' + summaryHTML(t);
+            $('checkoutModal').classList.add('open');
+        }
+
+        function closeCheckout() { $('checkoutModal').classList.remove('open'); }
+
+        function placeOrder(e) {
+            e.preventDefault();
+            const t = totals();
+            const order = {
+                id: 'CAL-' + Date.now().toString(36).toUpperCase(),
+                createdAt: new Date().toISOString(),
+                customer: { name: $('coName').value, email: $('coEmail').value, phone: $('coPhone').value },
+                travelDate: t.hasTours ? $('coDate').value : null,
+                address: t.hasMerch ? $('coAddress').value : null,
+                payment: document.querySelector('input[name="payment"]:checked').value,
+                notes: $('coNotes').value,
+                items: t.lines.map(l => ({ id: l.product.id, name: l.product.name, price: l.product.price, qty: l.qty })),
+                subtotal: t.subtotal, discount: t.discount, shipping: t.shipping, total: t.total, promo: state.promo,
+            };
+
+            // In production, send `order` to your backend / payment provider here.
+            const orders = load('calaguas-orders', []);
+            orders.push(order);
+            save('calaguas-orders', orders);
+
+            state = { items: {}, promo: null };
+            $('promoInput').value = '';
+            setPromoMsg('', false);
+            renderCart();
+            $('checkoutForm').reset();
+
+            $('checkoutContent').dataset.form = $('checkoutContent').dataset.form || $('checkoutContent').innerHTML;
+            $('checkoutContent').innerHTML = `
+                <button class="icon-btn" data-close-modal aria-label="Close">&times;</button>
+                <div class="confirmation">
+                    <div class="check">✅</div>
+                    <h2>Salamat, ${escapeHTML(order.customer.name)}!</h2>
+                    <p>Your order <span class="order-id">${order.id}</span> has been received.</p>
+                    <p>Total: <strong>${peso(order.total)}</strong> via ${order.payment}</p>
+                    <p>We'll email payment instructions and your booking confirmation to <strong>${escapeHTML(order.customer.email)}</strong> within 24 hours.</p>
+                    <button class="btn" data-close-modal>Continue Shopping</button>
+                </div>`;
+        }
+
+        function escapeHTML(s) {
+            return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function resetCheckoutModal() {
+            const content = $('checkoutContent');
+            if (content.dataset.form) {
+                content.innerHTML = content.dataset.form;
+                delete content.dataset.form;
+                bindCheckoutForm();
+            }
+        }
+
+        function bindCheckoutForm() {
+            $('checkoutForm').addEventListener('submit', placeOrder);
+            $('coDate').min = new Date().toISOString().split('T')[0];
+        }
+
+        // Events
+        document.addEventListener('click', e => {
+            const t = e.target.closest('[data-add],[data-inc],[data-dec],[data-remove],[data-close-modal],#startShopping');
+            if (!t) return;
+            if (t.dataset.add) addToCart(t.dataset.add);
+            else if (t.dataset.inc) changeQty(t.dataset.inc, 1);
+            else if (t.dataset.dec) changeQty(t.dataset.dec, -1);
+            else if (t.dataset.remove) changeQty(t.dataset.remove, -Infinity);
+            else if (t.id === 'startShopping') closeCart();
+            else if ('closeModal' in t.dataset) { closeCheckout(); resetCheckoutModal(); }
+        });
+
+        $('filters').addEventListener('click', e => {
+            const btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b === btn));
+            filter.category = btn.dataset.category;
+            renderProducts();
+        });
+
+        $('search').addEventListener('input', e => { filter.query = e.target.value; renderProducts(); });
+        $('sort').addEventListener('change', e => { filter.sort = e.target.value; renderProducts(); });
+
+        $('cartToggle').addEventListener('click', openCart);
+        $('closeCart').addEventListener('click', closeCart);
+        $('overlay').addEventListener('click', closeCart);
+        $('checkoutBtn').addEventListener('click', openCheckout);
+
+        $('checkoutModal').addEventListener('click', e => {
+            if (e.target === $('checkoutModal')) { closeCheckout(); resetCheckoutModal(); }
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Escape') return;
+            if ($('checkoutModal').classList.contains('open')) { closeCheckout(); resetCheckoutModal(); }
+            else closeCart();
+        });
+
+        $('applyPromo').addEventListener('click', () => {
+            const code = $('promoInput').value.trim().toUpperCase();
+            if (!code) { state.promo = null; setPromoMsg('', false); renderCart(); return; }
+            if (!PROMOS[code]) { setPromoMsg('Invalid promo code.', true); return; }
+            state.promo = code;
+            setPromoMsg(`Applied: ${PROMOS[code].label}`, false);
+            renderCart();
+        });
+
+        // Init
+        if (state.promo) { $('promoInput').value = state.promo; setPromoMsg(`Applied: ${PROMOS[state.promo]?.label ?? ''}`, false); }
+        bindCheckoutForm();
+        renderProducts();
+        renderCart();
+    </script>
+</body>
+</html>
